@@ -231,4 +231,60 @@ namespace MCE
             this.dy = dy;
         }
     }
+
+    class Mesh2D
+    {
+        List<float> x, y;
+
+        public Mesh2D()
+        {
+            x = new List<float>();
+            y = new List<float>();
+        }
+
+        public void BuildMesh(double minX, double maxX, double minY, double maxY, 
+            double dx, double dy)
+        {
+            double t;
+            int i;
+
+            x.Clear();
+            
+            for (t = minX, i = 0; t <= maxX; t = minX + (++i) * dx)
+                x.Add((float)t);
+
+            if (Math.Abs(x[x.Count - 1] - maxX) > 1E-10)
+                x.Add((float)maxX);
+
+            y.Clear();
+
+            for (t = minY, i = 0; t <= maxY; t = minY + (++i) * dy)
+                y.Add((float)t);
+
+            if (Math.Abs(y[y.Count - 1] - maxY) > 1E-10)
+                y.Add((float)maxY);
+        }
+
+        public float[] ToVertexBuffer()
+        {
+            float[] vertexes = new float[x.Count * 4 + y.Count * 4];
+            int k;
+            for(k = 0; k < x.Count; k++)
+            {
+                vertexes[4 * k] = x[k];
+                vertexes[4 * k + 1] = y[0];
+                vertexes[4 * k + 2] = x[k];
+                vertexes[4 * k + 3] = y[y.Count - 1];
+            }
+            return vertexes;
+        }
+
+        public uint[] ToElementBuffer()
+        {
+            uint[] lines = new uint[x.Count * 4];
+            for (uint i = 0; i < lines.Length; i++)
+                lines[i] = i;
+            return lines;
+        }
+    }
 }

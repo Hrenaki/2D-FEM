@@ -24,7 +24,7 @@ namespace MCE
                 vColors[i] = new float[] { temp, 0.5f, 0.5f};
             }
         }
-        public float[] ColorsToArray()
+        public float[] ToColorBuffer()
         {
             float[] colors = new float[vColors.Length * 3];
             int pos = 0;

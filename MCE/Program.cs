@@ -115,6 +115,10 @@ namespace MCE
             //
 
             //Console.ReadLine();
+
+            Mesh2D xy = new Mesh2D();
+            xy.BuildMesh(-50, 50, -50, 50, 10f, 10f);
+
             test1();
         }
 
@@ -202,10 +206,6 @@ namespace MCE
                 elems, vertexes, materials, diffCoeffs,
                 function, conditions);
             s.Solve();
-
-            double x = Double.PositiveInfinity;
-            if (x != x)
-                Console.WriteLine("HAHAAAHHAHAHAH");
 
             using (Window win = new Window(vertexes, elems, s.coeffs, 800, 800, "Mesh"))
             {
