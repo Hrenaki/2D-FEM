@@ -188,9 +188,6 @@ namespace MCE
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBOTriangles);
             GL.BufferData(BufferTarget.ElementArrayBuffer, elems.Length * sizeof(uint),
                 elems, BufferUsageHint.StaticDraw);
-
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             #endregion
 
             // Drops ColorBuffer and sets VBO
