@@ -16,14 +16,14 @@ namespace MCE
         ColorMap cl;
         float[] colors;
 
-        int VertexBufferObject;
+        int VBO;
 
         int ColorBuffer;
-        int VertexArrayObjectTriangles;
-        int ElementBufferObjectTriangles;
+        int VAOTriangles;
+        int EBOTriangles;
 
-        int VertexArrayObjectEdges;       
-        int ElementBufferObjectEdges;
+        int VAOEdges;       
+        int EBOEdges;
 
         Shader shader;
 
@@ -138,45 +138,49 @@ namespace MCE
         {
             GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-            VertexBufferObject = GL.GenBuffer();
+            VBO = GL.GenBuffer();
 
-            VertexArrayObjectTriangles = GL.GenVertexArray();
+            VAOTriangles = GL.GenVertexArray();
             ColorBuffer = GL.GenBuffer();
-            ElementBufferObjectTriangles = GL.GenBuffer();
+            EBOTriangles = GL.GenBuffer();
 
-            VertexArrayObjectEdges = GL.GenVertexArray();            
-            ElementBufferObjectEdges = GL.GenBuffer();
+            VAOEdges = GL.GenVertexArray();            
+            EBOEdges = GL.GenBuffer();
 
             #region VAO for triangles
-            GL.BindVertexArray(VertexArrayObjectTriangles);
+            GL.BindVertexArray(VAOTriangles);
 
             // vertexes
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexes.Length * sizeof(float), vertexes, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertexes.Length * sizeof(float), 
+                vertexes, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 
+                2 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
             // colors
             GL.BindBuffer(BufferTarget.ArrayBuffer, ColorBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, colors.Length * sizeof(float), colors, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, colors.Length * sizeof(float), 
+                colors, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(1);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObjectTriangles);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBOTriangles);
             GL.BufferData(BufferTarget.ElementArrayBuffer, elems.Length * sizeof(uint),
                 elems, BufferUsageHint.StaticDraw);
             #endregion
 
             // Drops ColorBuffer and sets VBO
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
             #region VAO for lines
-            GL.BindVertexArray(VertexArrayObjectEdges);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObjectEdges);
+            GL.BindVertexArray(VAOEdges);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBOEdges);
             GL.BufferData(BufferTarget.ElementArrayBuffer, edges.Length * sizeof(uint),
                 edges, BufferUsageHint.StaticDraw);
             
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 
+                2 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
             #endregion
 
@@ -213,12 +217,12 @@ namespace MCE
             switch (mode)
             {
                 case Mode.Edges:
-                    GL.BindVertexArray(VertexArrayObjectEdges);                    
+                    GL.BindVertexArray(VAOEdges);                    
                     GL.DrawElements(PrimitiveType.Lines, edges.Length, DrawElementsType.UnsignedInt, 0);
                     GL.BindVertexArray(0);
                     break;
                 case Mode.Faces:
-                    GL.BindVertexArray(VertexArrayObjectTriangles);
+                    GL.BindVertexArray(VAOTriangles);
                     GL.DrawElements(PrimitiveType.Triangles, elems.Length, DrawElementsType.UnsignedInt, 0);
                     GL.BindVertexArray(0);
                     break;
@@ -281,7 +285,7 @@ namespace MCE
         protected override void OnUnload(EventArgs e)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.DeleteBuffer(VertexBufferObject);
+            GL.DeleteBuffer(VBO);
             shader.Dispose();
 
             base.OnUnload(e);
