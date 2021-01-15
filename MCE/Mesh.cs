@@ -256,7 +256,7 @@ namespace MCE
             if (Math.Abs(x[x.Count - 1] - specPoint) > 1E-10)
                 x.Add((float)specPoint);
 
-            for (t = specPoint + dx, i = 1; t <= maxX; t = specPoint + (++i) * dx)
+            for (t = specPoint, i = 1; t <= maxX; t = specPoint + (++i) * dx)
                 x.Add((float)t);
 
             if (Math.Abs(x[x.Count - 1] - maxX) > 1E-10)

@@ -19,6 +19,8 @@ namespace MCE
         Mesh2D mesh2D;
         float[] meshVertexes;
         float meshHeight;
+        float meshStepX = 0.25f;
+        float meshStepY = 0.25f;
 
         int VBO;
         int VBOMesh;
@@ -265,7 +267,7 @@ namespace MCE
             float meshWidth = meshHeight * k;
             mesh2D.BuildMesh(position.X - meshWidth / 2.0, position.X + meshWidth / 2.0,
                 position.Y - meshHeight / 2.0, position.Y + meshHeight / 2.0, 
-                0.25, 0.25);
+                meshStepX, meshStepY);
 
             meshVertexes = mesh2D.ToVertexBuffer();
 

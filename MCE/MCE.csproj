@@ -128,8 +128,12 @@
     <Compile Include="Mesh.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reader.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="Problem.cs" />
     <Compile Include="Solver.cs" />
+    <Compile Include="SymmSparseMatrix.cs" />
+    <Compile Include="Vector.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>
   <ItemGroup>
