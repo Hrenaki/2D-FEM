@@ -21,6 +21,8 @@ namespace MCE
         float meshHeight;
         float meshStepX = 0.25f;
         float meshStepY = 0.25f;
+        float k = 0;
+        double beta;
 
         int VBO;
         int VBOMesh;
@@ -39,7 +41,7 @@ namespace MCE
         Matrix4 view, proj;
         float speed = 0.5f;
         float fov = 45.0f;
-        Vector3 position = new Vector3(0.0f, 0.0f, 5.0f);
+        Vector3 position = new Vector3(0.0f, 0.0f, 3f);
         Vector3 front = new Vector3(0.0f, 0.0f, -1.0f);
         Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
         Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
@@ -152,6 +154,11 @@ namespace MCE
         { }
         protected override void OnLoad(EventArgs e)
         {
+            k = Width / (float)Height;
+            beta = Math.Asin(k / Math.Tan(MathHelper.DegreesToRadians(67.5)));
+            if (beta < 0)
+                beta = Math.PI + beta;
+
             GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
             VBO = GL.GenBuffer();
@@ -222,10 +229,10 @@ namespace MCE
 
             shader = new Shader("shader.vert", "shader.frag");
 
-            // Default view and proj matrixes
+            // Default view and proj matrix
             view = Matrix4.LookAt(position, position + front, up);
             proj = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), 
-                Width / Height, 0.01f, 100.0f);
+                k, 0.1f, 100.0f);
 
             base.OnLoad(e);
         }
@@ -237,10 +244,7 @@ namespace MCE
             viewUniformLoc = GL.GetUniformLocation(shader.Handle, "view");
             projUniformLoc = GL.GetUniformLocation(shader.Handle, "proj");
 
-            float k = Width / (float)Height;
             view = Matrix4.LookAt(position, position + front, up);
-            proj = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), 
-                k, 0.01f, 100.0f);
             GL.UniformMatrix4(viewUniformLoc, false, ref view);
             GL.UniformMatrix4(projUniformLoc, false, ref proj);
 
@@ -260,23 +264,19 @@ namespace MCE
                     break;
             }
             
-            double beta = Math.Asin(k / Math.Tan(MathHelper.DegreesToRadians(67.5)));
-            if (beta < 0)
-                beta = Math.PI + beta;
             meshHeight = (float) (2.0 * Math.Abs(position.Z) * Math.Tan(beta) / k);
             float meshWidth = meshHeight * k;
             mesh2D.BuildMesh(position.X - meshWidth / 2.0, position.X + meshWidth / 2.0,
                 position.Y - meshHeight / 2.0, position.Y + meshHeight / 2.0, 
                 meshStepX, meshStepY);
-
+            
             meshVertexes = mesh2D.ToVertexBuffer();
-
+            
             GL.BindVertexArray(VAOMesh);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOMesh);
             GL.BufferData(BufferTarget.ArrayBuffer, meshVertexes.Length * sizeof(float),
                 meshVertexes, BufferUsageHint.StreamDraw);
             GL.DrawArrays(PrimitiveType.Lines, 0, mesh2D.LinesCount);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
 
             SwapBuffers();
@@ -335,6 +335,14 @@ namespace MCE
                 position.Y += e.YDelta / (float)Height * 1.5f;
             }
             base.OnMouseMove(e);
+        }
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            if(e.Button == MouseButton.Left && mode == Mode.Edges)
+            {
+                //TO DO
+            }
+            base.OnMouseDown(e);
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {

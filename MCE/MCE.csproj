@@ -125,6 +125,7 @@
     <Compile Include="ColorMap.cs" />
     <Compile Include="CompressedMatrix.cs" />
     <Compile Include="ExpressionParser.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

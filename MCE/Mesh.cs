@@ -235,6 +235,12 @@ namespace MCE
     {
         List<float> x, y;
         public int LinesCount { get { return 2 * (x.Count + y.Count); } }
+        public double dx { get; private set; } 
+        public double dy { get; private set; } 
+        public double MinX { get { return x[0]; } }
+        public double MaxX { get { return x[x.Count - 1]; } }
+        public double MinY { get { return y[0]; } }
+        public double MaxY { get { return y[y.Count - 1]; } }
 
         public Mesh2D()
         {
@@ -245,6 +251,9 @@ namespace MCE
         public void BuildMesh(double minX, double maxX, double minY, double maxY,
             double dx, double dy)
         {
+            this.dx = dx;
+            this.dy = dy;
+
             double t;
             int i;
             double specPoint = (minX < 0 ? Math.Ceiling(minX / dx) : Math.Floor(minX / dx)) * dx;
@@ -256,7 +265,7 @@ namespace MCE
             if (Math.Abs(x[x.Count - 1] - specPoint) > 1E-10)
                 x.Add((float)specPoint);
 
-            for (t = specPoint, i = 1; t <= maxX; t = specPoint + (++i) * dx)
+            for (t = specPoint + dx, i = 1; t <= maxX; t = specPoint + (++i) * dx)
                 x.Add((float)t);
 
             if (Math.Abs(x[x.Count - 1] - maxX) > 1E-10)
