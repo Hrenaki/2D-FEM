@@ -350,6 +350,11 @@ namespace MCE
                 Exit();
             base.OnUpdateFrame(e);
         }
+        protected override void OnResize(EventArgs e)
+        {
+            GL.Viewport(0, 0, Width, Height);
+            base.OnResize(e);
+        }
         protected override void OnUnload(EventArgs e)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
