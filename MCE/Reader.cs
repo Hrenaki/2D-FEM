@@ -53,21 +53,37 @@ namespace MCE
                 }
             }
 
+            // Reading vertexes
             string[] content = File.ReadAllLines(vertexesPath);
             int vertexesCount = content.Length;
             double[][] vertexes = new double[vertexesCount][];
             for (i = 0; i < vertexesCount; i++)
                 vertexes[i] = content[i].Split(' ').Select(v => double.Parse(v)).ToArray();
 
+            // Reading and compiling all function parts in right part of equation
+            content = File.ReadAllLines(functionPath);
+            Func[] possibleFunctions = new Func[content.Length];
+            for (i = 0; i < possibleFunctions.Length; i++)
+                possibleFunctions[i] = parser.getDelegate(content[i]);
+
+            // Reading elements
             content = File.ReadAllLines(elemsPath);
             int elemCount = content.Length;
             int[][] elems = new int[elemCount][];
+            Func[] function = new Func[elemCount];
+            int[] elem;
             for (i = 0; i < elemCount; i++)
-                elems[i] = content[i].Split(' ').Select(e => int.Parse(e)).ToArray();
+            {
+                elem = content[i].Split(' ').Select(e => int.Parse(e)).ToArray();
+                Array.Copy(elem, elems[i], 3);
+                function[i] = possibleFunctions[elem[3]];
+            }
 
+            // Reading materials and diff coeffs
             double[] materials = File.ReadAllText(materialPath).Split(' ').Select(m => double.Parse(m)).ToArray();
             double[] diffCoeffs = File.ReadAllText(diffCoeffsPath).Split(' ').Select(m => double.Parse(m)).ToArray();
 
+            // Reading boundary conditions
             string[][] boundCond_str = new string[boundaryConditionsPaths.Count][];
             for (i = 0; i < boundaryConditionsPaths.Count; i++)
                 boundCond_str[i] = File.ReadAllLines(boundaryConditionsPaths[i]);
@@ -76,15 +92,6 @@ namespace MCE
             for (i = 0; i < conditions.Length; i++)
                 conditions[i] = BoundaryCondition.Parse(parser, boundCond_str[i][0],
                     boundCond_str[i][1], boundCond_str[i][2]);
-
-            Func[] function = new Func[elemCount];
-            //content = File.ReadAllLines(functionPath);
-            Func t = parser.getDelegate(File.ReadAllLines(functionPath)[0]); // заглушка
-            for (i = 0; i < function.Length; i++)
-            {
-                //function[i] = parser.getDelegate(content[i]);
-                function[i] = t;
-            }
 
             return new Problem(elemCount, vertexesCount, elems, vertexes,
                 materials, diffCoeffs, function, conditions);
