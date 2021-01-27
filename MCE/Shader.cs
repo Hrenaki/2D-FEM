@@ -13,7 +13,7 @@ namespace MCE
 {
     class Shader : IDisposable
     {
-        public int Handle { get; }
+        private int Handle;
         private bool disposedValue = false;
 
         public Shader(string vertexPath, string fragmentPath)
@@ -63,6 +63,10 @@ namespace MCE
         public void Use()
         {
             GL.UseProgram(Handle);           
+        }
+        public void SetMatrix(string name, Matrix4 matrix)
+        {
+            GL.UniformMatrix4(GL.GetUniformLocation(Handle, name), false, ref matrix);
         }
         protected virtual void Dispose(bool disposing)
         {

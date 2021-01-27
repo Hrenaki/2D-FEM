@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoundaryCondition.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="ColorMap.cs" />
     <Compile Include="CompressedMatrix.cs" />
     <Compile Include="ExpressionParser.cs" />

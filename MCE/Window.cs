@@ -18,11 +18,9 @@ namespace MCE
 
         Mesh2D mesh2D;
         float[] meshVertexes;
-        float meshHeight;
+        float meshHeight, meshWidth;
         float meshStepX = 0.25f;
         float meshStepY = 0.25f;
-        float k = 0;
-        double beta;
 
         int VBO;
         int VBOMesh;
@@ -40,14 +38,14 @@ namespace MCE
 
         Matrix4 view, proj;
         float speed = 0.5f;
-        float fov = 45.0f;
         Vector3 position = new Vector3(0.0f, 0.0f, 3f);
         Vector3 front = new Vector3(0.0f, 0.0f, -1.0f);
         Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
         Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
-        int viewUniformLoc, projUniformLoc;
 
         Mode mode = Mode.Edges;
+
+        float mouseX, mouseY;
 
         enum Mode
         {
@@ -80,9 +78,6 @@ namespace MCE
                 if (curVert[1] < minY)
                     minY = curVert[1];
             }
-
-            position.X = (float) ((minX + maxX) / 2.0);
-            position.Y = (float) ((minY + maxY) / 2.0);
 
             this.vertexes = new float[vertexes.Length * 2];
             for(i = 0; i < vertexes.Length; i++)
@@ -154,11 +149,6 @@ namespace MCE
         { }
         protected override void OnLoad(EventArgs e)
         {
-            k = Width / (float)Height;
-            beta = Math.Asin(k / Math.Tan(MathHelper.DegreesToRadians(67.5)));
-            if (beta < 0)
-                beta = Math.PI + beta;
-
             GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
             VBO = GL.GenBuffer();
@@ -231,8 +221,7 @@ namespace MCE
 
             // Default view and proj matrix
             view = Matrix4.LookAt(position, position + front, up);
-            proj = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(fov), 
-                k, 0.1f, 100.0f);
+            proj = Matrix4.CreateOrthographic(Math.Abs(position.Z), Math.Abs(position.Z) * Height / Width, 0.1f, 100.0f);
 
             base.OnLoad(e);
         }
@@ -241,12 +230,14 @@ namespace MCE
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             shader.Use();
-            viewUniformLoc = GL.GetUniformLocation(shader.Handle, "view");
-            projUniformLoc = GL.GetUniformLocation(shader.Handle, "proj");
-
+            meshWidth = Math.Abs(position.Z);
+            meshHeight = meshWidth * Height / Width;
             view = Matrix4.LookAt(position, position + front, up);
-            GL.UniformMatrix4(viewUniformLoc, false, ref view);
-            GL.UniformMatrix4(projUniformLoc, false, ref proj);
+            proj = Matrix4.CreateOrthographic(meshWidth, 
+                meshHeight, 0.1f, 100.0f);
+
+            shader.SetMatrix("view", view);
+            shader.SetMatrix("proj", proj);
 
             switch (mode)
             {
@@ -264,8 +255,6 @@ namespace MCE
                     break;
             }
             
-            meshHeight = (float) (2.0 * Math.Abs(position.Z) * Math.Tan(beta) / k);
-            float meshWidth = meshHeight * k;
             mesh2D.BuildMesh(position.X - meshWidth / 2.0, position.X + meshWidth / 2.0,
                 position.Y - meshHeight / 2.0, position.Y + meshHeight / 2.0, 
                 meshStepX, meshStepY);
@@ -329,18 +318,22 @@ namespace MCE
         }
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
-            if(e.Mouse.IsButtonDown(MouseButton.Left))
-            {
-                position.X -= e.XDelta / (float)Width * 1.5f;
-                position.Y += e.YDelta / (float)Height * 1.5f;
-            }
+            //if(e.Mouse.IsButtonDown(MouseButton.Left))
+            //{
+            //    position.X -= e.XDelta / (float)Width * 1.5f;
+            //    position.Y += e.YDelta / (float)Height * 1.5f;
+            //}
             base.OnMouseMove(e);
         }
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if(e.Button == MouseButton.Left && mode == Mode.Edges)
+            if (e.Button == MouseButton.Left && mode == Mode.Edges)
             {
-                //TO DO
+                mouseX = 2.0f * e.X / (float)Width - 1.0f;
+                mouseY = 2.0f * -e.Y / (float)Height + 1.0f;
+
+                Vector4 t = (proj * view).Inverted() * new Vector4(mouseX, mouseY, 0, 1.0f);
+                Console.WriteLine((position.X + t.X) + " " + (position.Y + t.Y));
             }
             base.OnMouseDown(e);
         }
