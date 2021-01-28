@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using EParser;
+using NumMath;
 
 namespace MCE
 {
@@ -28,7 +30,7 @@ namespace MCE
 
         private BoundaryCondition[] conditions;
 
-        private Solver solver;
+        private SoLESolver solver;
 
         public Problem(int elemCount, int vertexesCount, int[][] elems, double[][] vertexes,
             double[] materials, double[] diffCoeffs,
@@ -297,8 +299,9 @@ namespace MCE
         public void Solve()
         {
             createGlobalMatrixAndGlobalVector();
-            solver = new Solver(new SymmSparseMatrix(vertexesCount, ig, jg, di, gg));
-            solver.solveCGM_LLT(coeffs, globalB);
+            solver = new SoLESolver(new SymmSparseMatrix(vertexesCount, ig, jg, di, gg), globalB);
+            solver.SolveCGM_LLT(coeffs, 1E-10);
+
             using (Window win = new Window(vertexes, elems, coeffs.values, 800, 800, "Mesh"))
             {
                 win.Run(120.0);

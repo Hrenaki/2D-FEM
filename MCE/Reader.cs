@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EParser;
 
 namespace MCE
 {
@@ -75,6 +76,7 @@ namespace MCE
             for (i = 0; i < elemCount; i++)
             {
                 elem = content[i].Split(' ').Select(e => int.Parse(e)).ToArray();
+                elems[i] = new int[3];
                 Array.Copy(elem, elems[i], 3);
                 function[i] = possibleFunctions[elem[3]];
             }
