@@ -24,7 +24,7 @@ namespace MCE
             int t = int.Parse(type_str);
             int[] vertexes = vertexes_str.Split(' ').Select(v => int.Parse(v)).ToArray();
 
-            return new BoundaryCondition(t, p.getDelegate(value_str), vertexes);
+            return new BoundaryCondition(t, p.GetFunction(value_str), vertexes);
         }
         public static BoundaryCondition Parse(string type_str, Func value, string vertexes_str)
         {

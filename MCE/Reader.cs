@@ -65,7 +65,7 @@ namespace MCE
             content = File.ReadAllLines(functionPath);
             Func[] possibleFunctions = new Func[content.Length];
             for (i = 0; i < possibleFunctions.Length; i++)
-                possibleFunctions[i] = parser.getDelegate(content[i]);
+                possibleFunctions[i] = parser.GetFunction(content[i]);
 
             // Reading elements
             content = File.ReadAllLines(elemsPath);

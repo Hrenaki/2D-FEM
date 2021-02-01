@@ -200,6 +200,8 @@ namespace MCE
             GL.EnableVertexAttribArray(0);
             #endregion
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
             #region VAO for Mesh
             GL.BindVertexArray(VAOMesh);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOMesh);
@@ -232,6 +234,7 @@ namespace MCE
             shader.Use();
             meshWidth = Math.Abs(position.Z);
             meshHeight = meshWidth * Height / Width;
+
             view = Matrix4.LookAt(position, position + front, up);
             proj = Matrix4.CreateOrthographic(meshWidth, 
                 meshHeight, 0.1f, 100.0f);

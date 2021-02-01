@@ -309,13 +309,5 @@ namespace MCE
             }
             return vertexes;
         }
-
-        public uint[] ToElementBuffer()
-        {
-            uint[] lines = new uint[2 * (x.Count + y.Count)];
-            for (uint i = 0; i < lines.Length; i++)
-                lines[i] = i;
-            return lines;
-        }
     }
 }
