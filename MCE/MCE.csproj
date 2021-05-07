@@ -69,11 +69,9 @@
     <Reference Include="DevILSharp, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DevILSharp.0.2.9\lib\netstandard2.0\DevILSharp.dll</HintPath>
     </Reference>
-    <Reference Include="EParser">
+    <Reference Include="EParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\EParser\EParser\bin\Release\EParser.dll</HintPath>
-    </Reference>
-    <Reference Include="ExpressionParser">
-      <HintPath>..\..\ExpressionParser\ExpressionParser\bin\Release\ExpressionParser.dll</HintPath>
     </Reference>
     <Reference Include="FShade.Core, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FShade.Core.5.1.3\lib\netstandard2.0\FShade.Core.dll</HintPath>
@@ -128,15 +126,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Visualizer">
+      <HintPath>..\..\Visualizer\Visualizer\bin\Debug\Visualizer.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoundaryCondition.cs" />
-    <Compile Include="ColorMap.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reader.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="Problem.cs" />
     <Compile Include="Window.cs" />

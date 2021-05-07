@@ -13,9 +13,6 @@ namespace MCE
         uint[] edges;
         uint[] elems;
 
-        ColorMap cl;
-        float[] colors;
-
         Mesh2D mesh2D;
         float[] meshVertexes;
         float meshHeight, meshWidth;
@@ -55,7 +52,6 @@ namespace MCE
 
         public Window(double[][] vertexes, int[][] elements, double[] values, int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
         {
-            cl = new ColorMap(values);
             mesh2D = new Mesh2D();
 
             double maxX = vertexes[0][0];
@@ -140,9 +136,7 @@ namespace MCE
                     edges[pos] = (uint)i;
                     edges[pos + 1] = (uint)v;
                     pos += 2;
-                }
-
-            colors = cl.ToColorBuffer();            
+                }          
         }
         public Window(int width, int height, string title) 
             : base(width, height, GraphicsMode.Default, title)
@@ -173,13 +167,6 @@ namespace MCE
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 
                 2 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-
-            // colors
-            GL.BindBuffer(BufferTarget.ArrayBuffer, ColorBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, colors.Length * sizeof(float), 
-                colors, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.EnableVertexAttribArray(1);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBOTriangles);
             GL.BufferData(BufferTarget.ElementArrayBuffer, elems.Length * sizeof(uint),
