@@ -268,7 +268,7 @@ namespace MCE
                 #region Second and third type boundary conditions 
                 for (m = 0; m < condSize; m++)
                 {
-                    if (conditions[m].Type == 2)
+                    if (conditions[m].Type == BoundaryConditionType.Second)
                     {
                         for (i = 0; i < 2; i++)
                             for (j = i + 1; j < 3; j++)
@@ -288,7 +288,7 @@ namespace MCE
                                     localB[j] += temp * detD;
                                 }
                     }
-                    else if (conditions[m].Type == 3)
+                    else if (conditions[m].Type == BoundaryConditionType.Third)
                     {
                         for (i = 0; i < 2; i++)
                             for (j = i + 1; j < 3; j++)
@@ -343,7 +343,7 @@ namespace MCE
             // First type boundary conditions
             foreach(BoundaryCondition condition in conditions)
             {
-                if(condition.Type == 1)
+                if(condition.Type == BoundaryConditionType.First)
                 {
                     curBound = condition.Vertexes;
                     localFunction = condition.Value;
@@ -885,7 +885,7 @@ namespace MCE
                     #region Second and third type boundary conditions 
                     for (m = 0; m < condSize; m++)
                     {
-                        if (conditions[m].Type == 2)
+                        if (conditions[m].Type == BoundaryConditionType.Second)
                         {
                             for (i = 0; i < 2; i++)
                                 for (j = i + 1; j < 3; j++)
@@ -905,7 +905,7 @@ namespace MCE
                                         localB[j] += temp * detD;
                                     }
                         }
-                        else if(conditions[m].Type == 3)
+                        else if(conditions[m].Type == BoundaryConditionType.Third)
                         {
                             for(i = 0; i < 2; i++)
                                 for(j = i + 1; j < 3; j++)
@@ -960,7 +960,7 @@ namespace MCE
                 // First type boundary conditions
                 foreach (BoundaryCondition condition in conditions)
                 {
-                    if (condition.Type == 1)
+                    if (condition.Type == BoundaryConditionType.First)
                     {
                         curBound = condition.Vertexes;
                         localFunction = condition.Value;
