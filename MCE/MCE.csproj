@@ -123,9 +123,10 @@
   <ItemGroup>
     <Compile Include="BoundaryCondition.cs" />
     <Compile Include="Mesh.cs" />
+    <Compile Include="Problems\EllipticalProblem.cs" />
+    <Compile Include="Problems\ParabolicProblem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Problem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

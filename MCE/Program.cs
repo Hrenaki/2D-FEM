@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NumMath;
 using Utils.EParser;
+using MCE.Problems;
 
 namespace MCE
 {
