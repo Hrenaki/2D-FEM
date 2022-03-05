@@ -56,6 +56,22 @@ namespace TriangleMeshTester
                             if (!result.IsSuccessful)
                                 return new Result() { IsSuccessful = false, Message = $"Can't add element ({lineValues.Skip(1)})", InnerResult = result };
                             break;
+                        case "b":
+                            var borderValues = lineValues.Skip(1);
+                            List<int> border = new List<int>();
+                            foreach(var value in borderValues)
+                            {
+                                int index;
+                                if (!int.TryParse(value, out index))
+                                    return new Result() { IsSuccessful = false, Message = "Can't parse border." };
+
+                                border.Add(index);
+                            }
+
+                            result = triangleMesh.TrySetBorder(border.ToArray());
+                            if (!result.IsSuccessful)
+                                return new Result() { IsSuccessful = false, Message = "Can't set border.", InnerResult = result };
+                            break;
                     }
                 }
             }

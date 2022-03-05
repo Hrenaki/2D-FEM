@@ -10,9 +10,12 @@ namespace TriangleMeshTester
     {
         private List<double[]> vertices = new List<double[]>();
         private List<int[]> elements = new List<int[]>();
+        private List<int> border = new List<int>();
 
-        public double[][] Vertices { get; }
-        public int[][] Elements { get; }
+        public double[][] Vertices => vertices.ToArray();
+        public int[][] Elements => elements.ToArray();
+
+        public int[] Border => border.ToArray();
 
         public Result TryAddPoint(double x, double y, double eps)
         {
@@ -45,6 +48,42 @@ namespace TriangleMeshTester
                 elements.Add(sortedElement);
 
             return new Result() { IsSuccessful = elementNotExists, Message = elementNotExists ? string.Empty : "Element already exists." };
+        }
+
+        public Result TrySetBorder(int[] border)
+        {
+            this.border.Clear();
+
+            if (border.Length < 2)
+                return new Result() { IsSuccessful = false, Message = "Border must contain 2 points at least." };
+
+            if (border[0] != border[border.Length - 1])
+                return new Result() { IsSuccessful = false, Message = "Border isn't closed." };
+
+            int start, end;
+            bool edgeExists;
+            for(int i = 0; i < border.Length - 1; i++)
+            {
+                edgeExists = false;
+                start = Math.Max(border[i], border[i + 1]);
+                end = Math.Max(border[i], border[i + 1]);
+
+                foreach(var element in elements)
+                {
+                    if(element[0] == start && (element[1] == end || element[2] == end) ||
+                       element[1] == start && element[2] == end)
+                    {
+                        edgeExists = true;
+                        break;
+                    }
+                }
+
+                if (!edgeExists)
+                    return new Result() { IsSuccessful = false, Message = $"Edge ({border[i]}, {border[i + 1]}) doesn't exist." };
+            }
+
+            this.border.AddRange(border);
+            return Result.OK;
         }
     }
 }
