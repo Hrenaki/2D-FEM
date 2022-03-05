@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MCE
+namespace UI
 {
     class Window : GameWindow
     {
@@ -13,7 +16,7 @@ namespace MCE
         uint[] edges;
         uint[] elems;
 
-        Mesh2D mesh2D;
+        RectangleMesh2D mesh2D;
         float[] meshVertexes;
         float meshHeight, meshWidth;
         float meshStepX = 0.25f;
@@ -26,7 +29,7 @@ namespace MCE
         int VAOTriangles;
         int EBOTriangles;
 
-        int VAOEdges;       
+        int VAOEdges;
         int EBOEdges;
 
         int VAOMesh;
@@ -52,7 +55,7 @@ namespace MCE
 
         public Window(double[][] vertexes, int[][] elements, double[] values, int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
         {
-            mesh2D = new Mesh2D();
+            mesh2D = new RectangleMesh2D();
 
             double maxX = vertexes[0][0];
             double maxY = vertexes[0][1];
@@ -76,10 +79,10 @@ namespace MCE
             }
 
             this.vertexes = new float[vertexes.Length * 2];
-            for(i = 0; i < vertexes.Length; i++)
+            for (i = 0; i < vertexes.Length; i++)
             {
-                this.vertexes[2 * i] = (float) (vertexes[i][0]);
-                this.vertexes[2 * i + 1] = (float) (vertexes[i][1]);
+                this.vertexes[2 * i] = (float)(vertexes[i][0]);
+                this.vertexes[2 * i + 1] = (float)(vertexes[i][1]);
             }
 
             elems = new uint[elements.Length * 3];
@@ -90,7 +93,7 @@ namespace MCE
             adjacencyList[0] = new List<int>();
             int[] numbers;
 
-            for(i = 0; i < elements.Length; i++)
+            for (i = 0; i < elements.Length; i++)
             {
                 numbers = elements[i];
                 Array.Sort(numbers);
@@ -108,7 +111,7 @@ namespace MCE
                             adjacencyList[numbers[j]].Add(numbers[k]);
                         }
                         else
-                        {    
+                        {
                             temp = adjacencyList[numbers[j]];
                             for (s = 0; s < temp.Count; s++)
                             {
@@ -130,15 +133,15 @@ namespace MCE
 
             edges = new uint[(vertexes.Length + elements.Length - 1) * 2];
             int pos = 0;
-            for(i = 0; i < adjacencyList.Length; i++)
-                foreach(int v in adjacencyList[i])
+            for (i = 0; i < adjacencyList.Length; i++)
+                foreach (int v in adjacencyList[i])
                 {
                     edges[pos] = (uint)i;
                     edges[pos + 1] = (uint)v;
                     pos += 2;
-                }          
+                }
         }
-        public Window(int width, int height, string title) 
+        public Window(int width, int height, string title)
             : base(width, height, GraphicsMode.Default, title)
         { }
         protected override void OnLoad(EventArgs e)
@@ -152,7 +155,7 @@ namespace MCE
             ColorBuffer = GL.GenBuffer();
             EBOTriangles = GL.GenBuffer();
 
-            VAOEdges = GL.GenVertexArray();            
+            VAOEdges = GL.GenVertexArray();
             EBOEdges = GL.GenBuffer();
 
             VAOMesh = GL.GenVertexArray();
@@ -162,9 +165,9 @@ namespace MCE
 
             // vertexes
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexes.Length * sizeof(float), 
+            GL.BufferData(BufferTarget.ArrayBuffer, vertexes.Length * sizeof(float),
                 vertexes, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false,
                 2 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
@@ -181,8 +184,8 @@ namespace MCE
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBOEdges);
             GL.BufferData(BufferTarget.ElementArrayBuffer, edges.Length * sizeof(uint),
                 edges, BufferUsageHint.StaticDraw);
-            
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 
+
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false,
                 2 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
             #endregion
@@ -223,7 +226,7 @@ namespace MCE
             meshHeight = meshWidth * Height / Width;
 
             view = Matrix4.LookAt(position, position + front, up);
-            proj = Matrix4.CreateOrthographic(meshWidth, 
+            proj = Matrix4.CreateOrthographic(meshWidth,
                 meshHeight, 0.1f, 100.0f);
 
             shader.SetMatrix("view", view);
@@ -244,13 +247,13 @@ namespace MCE
                     GL.BindVertexArray(0);
                     break;
             }
-            
+
             mesh2D.BuildMesh(position.X - meshWidth / 2.0, position.X + meshWidth / 2.0,
-                position.Y - meshHeight / 2.0, position.Y + meshHeight / 2.0, 
+                position.Y - meshHeight / 2.0, position.Y + meshHeight / 2.0,
                 meshStepX, meshStepY);
-            
+
             meshVertexes = mesh2D.ToVertexBuffer();
-            
+
             GL.BindVertexArray(VAOMesh);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOMesh);
             GL.BufferData(BufferTarget.ArrayBuffer, meshVertexes.Length * sizeof(float),
@@ -270,7 +273,7 @@ namespace MCE
                 return;
 
             // Camera moving
-            if(e.Key == Key.Space)
+            if (e.Key == Key.Space)
                 position += speed * front;
             if (e.Key == Key.LShift)
                 position -= speed * front;
@@ -289,7 +292,7 @@ namespace MCE
         {
             float x = (e.X / (float)Width - 0.5f) / 5f;
             float y = (-e.Y / (float)Height + 0.5f) / 5f;
-            
+
             // Zoom
             if (e.Delta > 0)
             {

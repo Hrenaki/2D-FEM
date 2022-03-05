@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NumMath;
-using EParser;
-using Visualizer;
+using Utils.EParser;
 
 namespace MCE
 {

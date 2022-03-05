@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using EParser;
+using Utils.EParser;
 using NumMath;
 
 namespace MCE
