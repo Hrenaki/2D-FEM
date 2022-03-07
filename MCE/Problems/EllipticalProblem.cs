@@ -33,6 +33,8 @@ namespace MCE.Problems
 
         private BoundaryCondition[] conditions;
 
+        public string Name { get; set; }
+
         public EllipticalProblem(int elemCount, int vertexesCount, int[][] elems, double[][] vertexes,
             double[] materials, double[] diffCoeffs,
             Func[] function, params BoundaryCondition[] conditions)
@@ -270,50 +272,55 @@ namespace MCE.Problems
                 #region Second and third type boundary conditions 
                 for (m = 0; m < condSize; m++)
                 {
-                    if (conditions[m].Type == BoundaryConditionType.Second)
+                    switch (conditions[m].Type)
                     {
-                        for (i = 0; i < 2; i++)
-                            for (j = i + 1; j < 3; j++)
-                                if (conditions[m].CheckEdge(numbers[i], numbers[j]))
-                                {
-                                    v1 = vertexes[numbers[i]];
-                                    v2 = vertexes[numbers[j]];
-                                    localFunction = conditions[m].Value;
+                        case BoundaryConditionType.Second:
+                            for (i = 0; i < 2; i++)
+                            {
+                                for (j = i + 1; j < 3; j++)
+                                    if (conditions[m].CheckEdge(numbers[i], numbers[j]))
+                                    {
+                                        v1 = vertexes[numbers[i]];
+                                        v2 = vertexes[numbers[j]];
+                                        localFunction = conditions[m].Value;
 
-                                    temp = localFunction(v1);
-                                    gamma = localFunction(v2);
-                                    lambda = 2.0 * temp + gamma;
-                                    detD = temp + 2.0 * gamma;
-                                    temp = Math.Sqrt((v2[0] - v1[0]) * (v2[0] - v1[0]) + (v2[1] - v1[1]) * (v2[1] - v1[1])) / 6.0;
+                                        temp = localFunction(v1);
+                                        gamma = localFunction(v2);
+                                        lambda = 2.0 * temp + gamma;
+                                        detD = temp + 2.0 * gamma;
+                                        temp = Math.Sqrt((v2[0] - v1[0]) * (v2[0] - v1[0]) + (v2[1] - v1[1]) * (v2[1] - v1[1])) / 6.0;
 
-                                    localB[i] += temp * lambda;
-                                    localB[j] += temp * detD;
-                                }
-                    }
-                    else if (conditions[m].Type == BoundaryConditionType.Third)
-                    {
-                        for (i = 0; i < 2; i++)
-                            for (j = i + 1; j < 3; j++)
-                                if (conditions[m].CheckEdge(numbers[i], numbers[j]))
-                                {
-                                    v1 = vertexes[numbers[i]];
-                                    v2 = vertexes[numbers[j]];
-                                    localFunction = conditions[m].Value;
+                                        localB[i] += temp * lambda;
+                                        localB[j] += temp * detD;
+                                    }
+                            }
+                            break;
+                        case BoundaryConditionType.Third:
+                            for (i = 0; i < 2; i++)
+                            {
+                                for (j = i + 1; j < 3; j++)
+                                    if (conditions[m].CheckEdge(numbers[i], numbers[j]))
+                                    {
+                                        v1 = vertexes[numbers[i]];
+                                        v2 = vertexes[numbers[j]];
+                                        localFunction = conditions[m].Value;
 
-                                    temp = localFunction(v1[0], v1[1]);
-                                    gamma = localFunction(v2[0], v2[1]);
-                                    lambda = 2.0 * temp + gamma;
-                                    detD = temp + 2.0 * gamma;
-                                    temp = Math.Sqrt((v2[0] - v1[0]) * (v2[0] - v1[0]) + (v2[1] - v1[1]) * (v2[1] - v1[1])) * conditions[m].Beta / 6.0;
+                                        temp = localFunction(v1[0], v1[1]);
+                                        gamma = localFunction(v2[0], v2[1]);
+                                        lambda = 2.0 * temp + gamma;
+                                        detD = temp + 2.0 * gamma;
+                                        temp = Math.Sqrt((v2[0] - v1[0]) * (v2[0] - v1[0]) + (v2[1] - v1[1]) * (v2[1] - v1[1])) * conditions[m].Beta / 6.0;
 
-                                    localMatrix[i, i] += temp * 2.0;
-                                    localMatrix[i, j] += temp;
-                                    localMatrix[j, i] += temp;
-                                    localMatrix[j, j] += temp * 2.0;
+                                        localMatrix[i, i] += temp * 2.0;
+                                        localMatrix[i, j] += temp;
+                                        localMatrix[j, i] += temp;
+                                        localMatrix[j, j] += temp * 2.0;
 
-                                    localB[i] += temp * lambda;
-                                    localB[j] += temp * detD;
-                                }
+                                        localB[i] += temp * lambda;
+                                        localB[j] += temp * detD;
+                                    }
+                            }
+                            break;
                     }
                 }
                 #endregion
@@ -343,36 +350,33 @@ namespace MCE.Problems
             }
 
             // First type boundary conditions
-            foreach (BoundaryCondition condition in conditions)
+            foreach (BoundaryCondition condition in conditions.Where(condition => condition.Type == BoundaryConditionType.First))
             {
-                if (condition.Type == BoundaryConditionType.First)
+                curBound = condition.Vertexes;
+                localFunction = condition.Value;
+                for (k = 0; k < curBound.Length; k++)
                 {
-                    curBound = condition.Vertexes;
-                    localFunction = condition.Value;
-                    for (k = 0; k < curBound.Length; k++)
+                    i = curBound[k];
+                    curVert = vertexes[i];
+
+                    di[i] = 1;
+                    globalB[i] = localFunction(curVert);
+
+                    for (s = ig[i]; s < ig[i + 1]; s++)
                     {
-                        i = curBound[k];
-                        curVert = vertexes[i];
+                        globalB[jg[s]] -= gg[s] * globalB[i];
+                        gg[s] = 0;
+                    }
 
-                        di[i] = 1;
-                        globalB[i] = localFunction(curVert);
-
-                        for (s = ig[i]; s < ig[i + 1]; s++)
+                    for (s = i + 1; s < vertexesCount; s++)
+                    {
+                        for (j = ig[s]; j < ig[s + 1] && jg[j] <= i; j++)
                         {
-                            globalB[jg[s]] -= gg[s] * globalB[i];
-                            gg[s] = 0;
-                        }
-
-                        for (s = i + 1; s < vertexesCount; s++)
-                        {
-                            for (j = ig[s]; j < ig[s + 1] && jg[j] <= i; j++)
+                            if (jg[j] == i)
                             {
-                                if (jg[j] == i)
-                                {
-                                    globalB[s] -= gg[j] * globalB[i];
-                                    gg[j] = 0;
-                                    break;
-                                }
+                                globalB[s] -= gg[j] * globalB[i];
+                                gg[j] = 0;
+                                break;
                             }
                         }
                     }
