@@ -57,5 +57,11 @@
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TriangleMeshTester\TriangleMeshTester.csproj">
+      <Project>{4773119e-d118-4bd2-b999-15405d6d5ddc}</Project>
+      <Name>TriangleMeshTester</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

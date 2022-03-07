@@ -45,6 +45,17 @@
     <Compile Include="Result.cs" />
     <Compile Include="TriangleMesh.cs" />
     <Compile Include="TriangleMeshReader.cs" />
+    <Compile Include="TriangleMeshTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EParser\Utils.csproj">
+      <Project>{c987a331-9166-45d4-b80d-a3091e8701bf}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCE\MCE.csproj">
+      <Project>{3870fb18-189f-4133-afe7-abd0f1e58ae2}</Project>
+      <Name>MCE</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
