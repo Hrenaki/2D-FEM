@@ -131,8 +131,6 @@ namespace MCE.Problems
         {
             di = new double[vertexesCount];
             ig = new int[vertexesCount + 1];
-            jg = new int[vertexesCount + elemCount - 1];
-            gg = new double[jg.Length];
 
             int[] numbers;
             int i, j, k, s;
@@ -172,6 +170,18 @@ namespace MCE.Problems
                     }
                 }
             }
+
+            int edgeCount = 0;
+            foreach(var edges in adjacencyList)
+            {
+                if(edges != null)
+                {
+                    edgeCount += edges.Count;
+                }
+            }
+
+            jg = new int[edgeCount];
+            gg = new double[jg.Length];
 
             for (i = 1; i < adjacencyList.Length; i++)
             {
