@@ -47,43 +47,6 @@ namespace MCE.Problems.Magnetic
 
             for (i = 0; i < elemCount; i++) // element loop
             {
-                //for(j = 0; j < 4; j++)
-                //{
-                //    int edgeStart = elementArray[j];
-                //    int edgeEnd = elementArray[(j + 1) % 4];
-                //
-                //    if(edgeEnd < edgeStart)
-                //    {
-                //        int tmp = edgeStart;
-                //        edgeStart = edgeEnd;
-                //        edgeEnd = tmp;
-                //    }
-                //
-                //    if(adjacencyList[edgeEnd] == null)
-                //    {
-                //        adjacencyList[edgeEnd] = new List<int>() { edgeStart };
-                //    }
-                //    else
-                //    {
-                //        temp = adjacencyList[edgeEnd];
-                //
-                //        for(s = 0; s < temp.Count; s++)
-                //        {
-                //            if(temp[s] == edgeStart)
-                //            {
-                //                s = -1;
-                //                break;
-                //            }
-                //
-                //            if(edgeStart < temp[s])
-                //                break;
-                //        }
-                //
-                //        if(s != -1)
-                //            adjacencyList[edgeEnd].Insert(s, edgeStart);
-                //    }
-                //}
-
                 Array.Copy(mesh.Elements.ElementAt(i).Element, numbers, 4);
                 Array.Sort(numbers); // global numbers of element's vertexes
                 for (j = 1; j < numbers.Length; j++) // loop for global numbers
@@ -168,6 +131,10 @@ namespace MCE.Problems.Magnetic
             IReadOnlyCollection<Point> vertices = mesh.Vertices;
             RectangleElement element;
 
+            double hx, hy;
+            double hyx, hxy;
+            double coeff;
+
             // element loop
             for (k = 0; k < elemCount; k++)
             {
@@ -181,11 +148,8 @@ namespace MCE.Problems.Magnetic
 
                 mesh.GetElementBounds(element, out double minX, out double maxX, out double minY, out double maxY);
 
-                double hx = maxX - minX;
-                double hy = maxY - minY;
-
-                double avgX = (maxX + minX) / 2.0;
-                double avgY = (maxY + minY) / 2.0;
+                hx = maxX - minX;
+                hy = maxY - minY;
 
                 int localNumber = 0;
                 i = 0;
@@ -197,14 +161,9 @@ namespace MCE.Problems.Magnetic
                     i++;
                 }
 
-                double dAdx = 1;
-                double dAdy = 1;
-                double B = Math.Sqrt(dAdx * dAdx + dAdy * dAdy);
-
-                double coeff = 1.0 / (6.0 * mu0 * material.RelativeMagneticPermeability);
-
-                double hyx = hy / hx;
-                double hxy = hx / hy;
+                coeff = 1.0 / (6.0 * mu0 * material.RelativeMagneticPermeability);
+                hyx = hy / hx;
+                hxy = hx / hy;
 
                 // first row
                 localMatrix[0, 0] = coeff * (-2.0 * hyx + hxy); // 0 - 1
@@ -299,8 +258,6 @@ namespace MCE.Problems.Magnetic
             SymmSparseMatrix A = new SymmSparseMatrix(vertexCount, ig, jg, di, gg);
             SoLESolver.SolveCGM(A, globalB, coeffs);
             q0.Copy(coeffs);
-
-            double residual = (A * coeffs - globalB).sqrMagnitude / globalB.sqrMagnitude;
         }
 
         public int SolveNonLinear(Vector q0, double mu0, 
@@ -316,11 +273,16 @@ namespace MCE.Problems.Magnetic
             double[,] localMatrix = new double[size, size]; // local matrix
             double[] localB = new double[size]; // local B
 
-            double minX, maxX, hx, avgX;
-            double minY, maxY, hy, avgY;
+            double minX, maxX, hx;
+            double minY, maxY, hy;
+            double hyx, hxy;
+
+            double dAdx, dAdy;
             double B;
             double inverseMagneticPermeability;
 
+            double coeff;
+            
             double relativeResidual = 0;
             double prevRelativeResidual;
 
@@ -381,32 +343,28 @@ namespace MCE.Problems.Magnetic
                         i++;
                     }
 
-                    avgX = (maxX + minX) / 2.0;
-                    avgY = (maxY + minY) / 2.0;
-
                     if (material.RelativeMagneticPermeabilitySpline != null)
                     {
-                        double dAdx = coeffs[numbers[0]] * (-1) / hx * 0.5 +
-                                      coeffs[numbers[1]] * 1 / hx * 0.5 +
-                                      coeffs[numbers[2]] * (-1) / hx * 0.5 +
-                                      coeffs[numbers[3]] * 1 / hx * 0.5;
+                        dAdx = coeffs[numbers[0]] * (-1) / hx * 0.5 +
+                               coeffs[numbers[1]] * 1 / hx * 0.5 +
+                               coeffs[numbers[2]] * (-1) / hx * 0.5 +
+                               coeffs[numbers[3]] * 1 / hx * 0.5;
 
-                        double dAdy = coeffs[numbers[0]] * (-1) / hy * 0.5 +
-                                      coeffs[numbers[1]] * (-1) / hy * 0.5 +
-                                      coeffs[numbers[2]] * 1 / hy * 0.5 +
-                                      coeffs[numbers[3]] * 1 / hy * 0.5;
+                        dAdy = coeffs[numbers[0]] * (-1) / hy * 0.5 +
+                               coeffs[numbers[1]] * (-1) / hy * 0.5 +
+                               coeffs[numbers[2]] * 1 / hy * 0.5 +
+                               coeffs[numbers[3]] * 1 / hy * 0.5;
 
-                        //double B1 = GetModuleBOnElement(avgX, avgY, numbers, globalToLocalNumbers, minX, maxX, minY, maxY);
                         B = Math.Sqrt(dAdx * dAdx + dAdy * dAdy);
 
                         inverseMagneticPermeability = 1.0 / mu0 * CalculateInverseMu(material.RelativeMagneticPermeabilitySpline, B);
                     }
                     else inverseMagneticPermeability = 1.0 / (mu0 * material.RelativeMagneticPermeability); 
 
-                    double coeff = 1.0 / 6.0 * inverseMagneticPermeability;
+                    coeff = 1.0 / 6.0 * inverseMagneticPermeability;
 
-                    double hyx = hy / hx;
-                    double hxy = hx / hy;
+                    hyx = hy / hx;
+                    hxy = hx / hy;
 
                     // first row
                     localMatrix[0, 0] = coeff * (-2.0 * hyx + hxy); // 0 - 1
@@ -505,37 +463,27 @@ namespace MCE.Problems.Magnetic
                 double optRel = relaxation;
                 if (prevRelativeResidual != 0)
                 {
-                    //optRel = 0.5;
-
                     double log = Math.Log10(relativeResidual / prevRelativeResidual + 1);
                     if (log <= 0)
                     {
-                        //relaxation = 0.25;
                         optRel = Math.Min(0.5 + 0.1 * (Math.Abs(log) + 1), 0.9);
                     }
                     else
                     {
-                        //relaxation = 0.75;
                         optRel = Math.Max(0.1, 0.5 - 0.1 * Math.Abs(log + 1));
                     }
                 }
-
-                // |A(q_k) * q_k - b(q_k)|
-                // -----------------------
-                //        |b(q_k)|
 
                 Console.WriteLine($"iteration = {iteration + 1}. Relative residual = {relativeResidual.ToString("E6")}.");
 
                 if (relativeResidual < sqrIterationEpsilon)
                     break;
 
-                
                 prevCoeffs.Copy(coeffs);
                 // q_k+1
                 int steps = SoLESolver.SolveCGM(A, globalB, coeffs);
                 Console.WriteLine($"CGM steps = {steps}.\nCGM solution relative residual = {((A * coeffs - globalB).sqrMagnitude / globalB.sqrMagnitude).ToString("E6")}.\nRelaxation = {optRel.ToString("F6")}");
                 coeffs = optRel * coeffs + (1 - optRel) * prevCoeffs;
-
 
                 Console.WriteLine("\n");
             }
