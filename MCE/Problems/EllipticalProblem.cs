@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utils.EParser;
+using EParser;
 
 namespace MCE.Problems
 {
@@ -13,8 +13,8 @@ namespace MCE.Problems
     {
         private int vertexesCount;
         private int elemCount;
-        private int[][] elems; // elements list
-        private double[][] vertexes; // vertexes list
+        public int[][] elems; // elements list
+        public double[][] vertexes; // vertexes list
 
         private double[,] localMatrix; // local matrix A
 

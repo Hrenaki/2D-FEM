@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utils.EParser
+namespace EParser
 {
     public delegate double Func(params double[] t);
     public class ExpressionParser

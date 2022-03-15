@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 using MCE;
 using MCE.Problems;
-using Utils;
-using Utils.EParser;
+using EParser;
 
 namespace TriangleMeshTester
 {

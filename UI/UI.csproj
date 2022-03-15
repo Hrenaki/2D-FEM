@@ -33,8 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NumMath, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\NumMath.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.3.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.3.1\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OptimizationMethods">
+      <HintPath>..\OptimizationMethods.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,6 +65,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EParser\Utils.csproj">
+      <Project>{c987a331-9166-45d4-b80d-a3091e8701bf}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCE\MCE.csproj">
+      <Project>{3870FB18-189F-4133-AFE7-ABD0F1E58AE2}</Project>
+      <Name>MCE</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TriangleMeshTester\TriangleMeshTester.csproj">
       <Project>{4773119e-d118-4bd2-b999-15405d6d5ddc}</Project>
       <Name>TriangleMeshTester</Name>
